@@ -9,7 +9,9 @@ class LoginPage extends Page {
     credentials = {
         users: {
             standard: 'standard_user',
+            lockedOut: 'locked_out_user',
             problem: 'problem_user',
+            performanceGlitch: 'performance_glitch_user',
             error: 'error_user',
             visual: 'visual_user'
         },
@@ -28,6 +30,10 @@ class LoginPage extends Page {
 
     get inputPassword () {
         return $('#password');
+    }
+
+    get errorMessage () {
+        return $('[data-test="error"]');
     }
 
     /**

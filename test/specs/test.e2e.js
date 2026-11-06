@@ -25,4 +25,14 @@ describe('Sauce Demo login', () => {
         await ProductsPage.addToCart('Sauce Labs Onesie')
         await expect(ProductsPage.cartBadge).toHaveText('1')
     })
-})
+
+   
+    it('should log in successfully as standard_user', async () => {
+        await browser.deleteCookies() 
+
+        await LoginPage.open()
+        await LoginPage.login(LoginPage.credentials.users.standard, LoginPage.credentials.password)
+
+        await expect(browser).toHaveUrl(expect.stringContaining('inventory.html'))
+        await expect(ProductsPage.title).toHaveText('Products')
+    })
