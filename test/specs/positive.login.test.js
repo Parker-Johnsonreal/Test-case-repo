@@ -16,17 +16,26 @@ describe('[Sauce demo] Positive testing a user', () => {
         await expect(LoginPage.btnSubmit).toBeDisplayed()
     })
 
-    it('should log in as standard_user and display the Products page', async () => {
-      
-        await LoginPage.inputUsername.setValue(LoginPage.credentials.users.standard)
-        await LoginPage.inputPassword.setValue(LoginPage.credentials.password)
+    it('should log in each user (except locked_out_user) one after another and display the Products page', async () => {
+        const { users, password } = LoginPage.credentials
 
-      
-        await LoginPage.btnSubmit.click()
+        // logs in every user from the login page except locked_out_user
+        const validUsers = Object.values(users).filter(user => user !== users.lockedOut)
 
-     
-        await expect(browser).toHaveUrl(expect.stringContaining('inventory.html'))
-        await expect(ProductsPage.title).toHaveText('Products')
-        await expect(ProductsPage.inventoryItems).toBeElementsArrayOfSize({ gte: 1 })
+        for (const user of validUsers) {
+            await LoginPage.open()
+
+            await LoginPage.inputUsername.setValue(user)
+            await LoginPage.inputPassword.setValue(password)
+            await LoginPage.btnSubmit.click()
+
+            await expect(browser).toHaveUrl(expect.stringContaining('inventory.html'))
+            await expect(ProductsPage.title).toHaveText('Products')
+            await expect(ProductsPage.inventoryItems).toBeElementsArrayOfSize(6)
+
+            
+            await browser.execute(() => localStorage.clear())
+            await browser.deleteCookies()
+        }
     })
 })
