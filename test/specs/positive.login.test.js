@@ -19,7 +19,7 @@ describe('[Sauce demo] Positive testing a user', () => {
     it('should log in each user (except locked_out_user) one after another and display the Products page', async () => {
         const { users, password } = LoginPage.credentials
 
-        // logs in every user from the login page except locked_out_user
+       
         const validUsers = Object.values(users).filter(user => user !== users.lockedOut)
 
         for (const user of validUsers) {
@@ -37,5 +37,16 @@ describe('[Sauce demo] Positive testing a user', () => {
             await browser.execute(() => localStorage.clear())
             await browser.deleteCookies()
         }
+    })
+
+    it('should block locked_out_user with the correct password and show the locked out error', async () => {
+        await LoginPage.inputUsername.setValue(LoginPage.credentials.users.lockedOut)
+        await LoginPage.inputPassword.setValue(LoginPage.credentials.password)
+        await LoginPage.btnSubmit.click()
+
+        
+        await expect(browser).toHaveUrl('https://www.saucedemo.com/')
+        await expect(LoginPage.errorMessage).toBeDisplayed()
+        await expect(LoginPage.errorMessage).toHaveText('Epic sadface: Sorry, this user has been locked out.')
     })
 })

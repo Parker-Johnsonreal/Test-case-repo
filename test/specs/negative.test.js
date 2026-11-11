@@ -18,10 +18,8 @@ describe('[Sauce demo] Negative testing a password', () => {
     it('should show an error message for each user with an incorrect password', async () => {
         const { users } = LoginPage.credentials
 
-    
-        const usersToTest = Object.values(users).filter(user => user !== users.lockedOut)
-
-        for (const user of usersToTest) {
+        // every user from the login page, INCLUDING locked_out_user 
+        for (const user of Object.values(users)) {
             await LoginPage.open()
 
             await LoginPage.inputUsername.setValue(user)
