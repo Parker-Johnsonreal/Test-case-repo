@@ -6,7 +6,6 @@ import ProductsPage from '../pageobjects/products.page.js'
 describe('[Sauce demo] Negative testing a password', () => {
     beforeEach(async () => {
         
-        await browser.deleteCookies()
         await LoginPage.open()
     })
 
@@ -16,18 +15,25 @@ describe('[Sauce demo] Negative testing a password', () => {
         await expect(LoginPage.btnSubmit).toBeDisplayed()
     })
 
-    it('should show an error message when a user enters an incorrect password', async () => {
-      
-        await LoginPage.inputUsername.setValue(LoginPage.credentials.users.standard)
-        await LoginPage.inputPassword.setValue('wrong_password')
+    it('should show an error message for each user with an incorrect password', async () => {
+        const { users } = LoginPage.credentials
 
-      
-        await LoginPage.btnSubmit.click()
+    
+        const usersToTest = Object.values(users).filter(user => user !== users.lockedOut)
 
-     
-        await expect(browser).toHaveUrl('https://www.saucedemo.com/')
-        await expect(LoginPage.errorMessage).toBeDisplayed()
-        await expect(LoginPage.errorMessage).toHaveText('Epic sadface: Username and password do not match any user in this service')
+        for (const user of usersToTest) {
+            await LoginPage.open()
+
+            await LoginPage.inputUsername.setValue(user)
+            await LoginPage.inputPassword.setValue('wrong_password')
+            
+
+            await LoginPage.btnSubmit.click()
+
+            await expect(browser).toHaveUrl('https://www.saucedemo.com/')
+            await expect(LoginPage.errorMessage).toBeDisplayed()
+            await expect(LoginPage.errorMessage).toHaveText('Epic sadface: Username and password do not match any user in this service')
+        }
     })
 
     })
